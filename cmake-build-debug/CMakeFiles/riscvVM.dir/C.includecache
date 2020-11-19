@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/josh/CLionProjects/RISC_V_VM/elfhandler.h
+elf.h
+-
+bits/types/FILE.h
+-
+
+/home/josh/CLionProjects/RISC_V_VM/main.c
+stdio.h
+-
+stdlib.h
+-
+zconf.h
+-
+string.h
+-
+sys/mman.h
+-
+stdio.h
+-
+stdlib.h
+-
+link.h
+-
+elfhandler.h
+/home/josh/CLionProjects/RISC_V_VM/elfhandler.h
+inttypes.h
+-
+
