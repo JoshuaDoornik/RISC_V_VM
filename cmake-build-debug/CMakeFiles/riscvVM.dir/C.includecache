@@ -6,6 +6,18 @@
 
 #IncludeRegexTransform: 
 
+/home/josh/CLionProjects/RISC_V_VM/elfhandler.c
+elf.h
+-
+link.h
+-
+bits/types/FILE.h
+-
+stdio.h
+-
+string.h
+-
+
 /home/josh/CLionProjects/RISC_V_VM/elfhandler.h
 elf.h
 -

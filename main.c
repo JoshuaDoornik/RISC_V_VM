@@ -39,25 +39,20 @@ printf("file is %zu bytes long\n", sz);
 ElfW(Ehdr) header;
 read_elf64_header(fp, &header);
 uint16_t pheadercount = header.e_phnum;
-ElfW(Phdr) pheader[pheadercount];
-ElfW(Phdr) text_pheader;
+ElfW(Phdr) pheaders[pheadercount];
+ElfW(Shdr) sheaders[header.e_shnum];
     for (int i = 0; i < pheadercount; ++i) {
-        read_program_header_table(fp,&pheader[i]);
-        check_pheader_type(&pheader[i]);
+        read_program_header_table(fp, &pheaders[i], &header);
+        check_pheader_type(&pheaders[i]);
 
     }
+    set_fp_to_section_header_part(fp,&header);
+    printf("ftell postion %ld, section headers located at %ld", ftell(fp),header.e_shoff);
 
-unsigned long leftover = sz-64-(56*pheadercount);
-unsigned char buffer [leftover];
-unsigned int accumulator = 0;
-fread(buffer,1,leftover,fp);
-
-    for (int i = 0; i < leftover; i++) {
-        accumulator+=buffer[i];
-        if (i %32 ==0){
-            accumulator =0;
-        }
+    for (int i = 0; i < header.e_shnum; ++i) {
+        read_section_header_part(fp,&sheaders[i],&header);
     }
+
 
 fclose(fp);
 exit(0);
