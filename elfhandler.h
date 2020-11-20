@@ -12,3 +12,4 @@
 
 int read_elf64_header(FILE *file, Elf64_Ehdr  *header);
 int read_program_header_table(FILE *file, Elf64_Phdr  *program_header);
+int check_pheader_type(ElfW(Phdr) *phdr);
