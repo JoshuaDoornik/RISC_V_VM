@@ -6,6 +6,9 @@
 #include <bits/types/FILE.h>
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 
 int check_fp_header_position(FILE *fp){
@@ -16,17 +19,39 @@ void set_fp_header_position(FILE *fp){
     rewind(fp);
 }
 
-///Reads the header from the elf. Assumes file pointer in correct position
-int read_elf64_header(FILE *file, Elf64_Ehdr  *header) {
+void ERROR(const char* errorstring){
+    fprintf(stderr,"%s", errorstring);
+    _exit(-1);
+}
+bool elf_check_file(ElfW(Ehdr)  *hdr) {
+    if(!hdr) return false;
+    if(hdr->e_ident[EI_MAG0] != ELFMAG0) {
+        ERROR("ELF Header EI_MAG0 incorrect.\n");
+        return false;
+    }
+    if(hdr->e_ident[EI_MAG1] != ELFMAG1) {
+        ERROR("ELF Header EI_MAG1 incorrect.\n");
+        return false;
+    }
+    if(hdr->e_ident[EI_MAG2] != ELFMAG2) {
+        ERROR("ELF Header EI_MAG2 incorrect.\n");
+        return false;
+    }
+    if(hdr->e_ident[EI_MAG3] != ELFMAG3) {
+        ERROR( "ELF Header EI_MAG3 incorrect.\n");
+        return false;
+    }
+    return true;
+}
 
-        fread(header, 0x40, 1, file);
-        // check so its really an elf file
-        if (memcmp(header->e_ident, ELFMAG, SELFMAG) == 0) {
-            return 0;
-        }
-        else{
-            return -1;
-        }
+///Reads the header from the elf. Assumes file pointer in correct position
+int read_elf64_header(char* elf, ElfW(Ehdr)** header) {
+    *header = memcpy( *header, elf, 0x40);
+    if (elf_check_file(*header)){
+        return 0;
+    }else{
+        return 1;
+    }
     }
 ///Reads a single program header from raw elf file. If the file pointer is in the wrong position -1 is returned.
 int read_elf32_header(FILE *file, Elf32_Ehdr *header){
@@ -51,9 +76,9 @@ void set_fp_program_header_position(FILE *fp, ElfW(Ehdr) *ehdr){
 }
 
 ///Reads a single program header from raw elf file. Assumes the file pointer is in the correct position.
-int read_program_header_table(FILE *file, ElfW(Phdr) *program_header, ElfW(Ehdr) *ehdr) {
-    // Either Elf64_Ehdr or Elf32_Ehdr depending on architecture.
-    fread(program_header, ehdr->e_phentsize, 1, file);
+int read_program_header_table(char *elf, ElfW(Phdr) *program_header, ElfW(Ehdr) *ehdr) {
+    program_header = (ElfW(Phdr) *) &elf + ehdr->e_phoff;
+
     return 0;
 }
 
@@ -103,6 +128,85 @@ void check_pheader_type(ElfW(Phdr) *phdr) {
         default:
             printf("NON STANDARD TYPE. PROBABLY GNU RELATED.\n");
     }
+}
+
+void check_sheader_type(ElfW(Shdr) *shdr) {
+    switch (shdr->sh_type) {
+
+        case SHT_NULL:
+            printf("ST_NULL\n");
+            break;
+        case SHT_PROGBITS:
+            printf("SHT_PROGBITS\n");
+            break;
+        case SHT_SYMTAB:
+            printf("SHT_SYMTAB\n");
+            break;
+        case SHT_STRTAB:
+            printf("SHT_STRTAB\n");
+            break;
+        case SHT_RELA:
+            printf("SHT_RELA\n");
+            break;
+        case SHT_HASH:
+            printf("SHT_HASH\n");
+            break;
+        case SHT_DYNAMIC:
+            printf("SHT_DYNAMIC\n");
+            break;
+        case SHT_NOTE:
+            printf("SHT_NOTE\n");
+            break;
+        case SHT_NOBITS:
+            printf("SHT_NOBITS\n");
+            break;
+        case SHT_REL:
+            printf("SHT_REL\n");
+            break;
+        case SHT_SHLIB:
+            printf("SHT_SHLIB\n");
+            break;
+        case SHT_DYNSYM:
+            printf("SHT_DYNSYM\n");
+            break;
+        case SHT_LOPROC:
+            printf("SHT_LOPROC\n");
+            break;
+        case SHT_HIPROC:
+            printf("SHT_HIPROC\n");
+            break;
+        case SHT_LOUSER:
+            printf("SHT_LOUSER\n");
+            break;
+        case SHT_HIUSER:
+            printf("SHT_HIUSER\n");
+            break;
+        case SHT_PREINIT_ARRAY:
+            printf("SHT_PREINIT_ARRAY\n");
+            break;
+        default:
+            printf("NON STANDARD TYPE. PROBABLY GNU RELATED.\n");
+    }
+}
+
+///Takes a SHT_STRTAB header, empty pointer and a file pointer.
+///get this data and load it into the correct datastructures to ensure the VM correctly performs the executable.
+int get_str_tab(ElfW(Shdr) *shdr, ElfW(Sym)* data, FILE* fp){
+    //data = malloc(shdr->sh_size);
+    int org_position = ftell(fp);
+    fseek(fp,shdr->sh_offset,SEEK_SET);
+    printf("position is %ld should be %lu \n",ftell(fp),shdr->sh_offset);
+    char* tempdata [shdr->sh_size];
+    fread(tempdata,1,shdr->sh_size,fp);
+    data = (ElfW(Sym)*)  tempdata;
+    //return the pointer to its original position.
+    fseek(fp,org_position,SEEK_SET);
+
+    if(data == NULL){
+        return -1;
+    }
+    printf("\n");
+    return 0;
 }
 
 ///TODO segments contain useful data for the VM to start the executable.

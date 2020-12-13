@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/riscvVM.dir/elfhandler.c.o"
+  "CMakeFiles/riscvVM.dir/loader.c.o"
   "CMakeFiles/riscvVM.dir/main.c.o"
   "riscvVM"
   "riscvVM.pdb"

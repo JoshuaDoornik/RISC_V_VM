@@ -8,6 +8,10 @@
 #include <link.h>
 #include "elfhandler.h"
 #include <inttypes.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <bits/fcntl-linux.h>
+#define FILEMODE S_IRWXU | S_IRGRP | S_IROTH
 
 
 ///used to check whats in the file buffer. No other use or utility.
@@ -18,42 +22,71 @@ int debugbuffer(FILE *fp,size_t sz){
     return 0;
 }
 
-///finds the size of the file and rewinds. As fseek and rewind are called it's slow.
-///returns the file size by seeking SEEK_END and calling ftell on that position.
-size_t find_file_size(FILE *fp){
-    fseek(fp, 0L, SEEK_END);
-    size_t sz = ftell(fp);
-    rewind(fp);
-    return sz;
-}
-
 int main() {
-FILE* fp = fopen("/home/josh/adderRiscv","rb");
-if (fp == NULL){
+int elf_descriptor = open("/home/josh/adderRiscv",O_RDWR | O_CREAT, FILEMODE);
+int ret,file_len;
+char *addr;
+struct stat st;
+ElfW(Ehdr)* header;
+    header = (ElfW(Ehdr)*) malloc(sizeof(ElfW(Ehdr)));
+    if (elf_descriptor == 0){
     printf("couldn't open file. \n");
 }
-size_t sz = find_file_size(fp);
-printf("file is %zu bytes long\n", sz);
-
-
-ElfW(Ehdr) header;
-read_elf64_header(fp, &header);
-uint16_t pheadercount = header.e_phnum;
-ElfW(Phdr) pheaders[pheadercount];
-ElfW(Shdr) sheaders[header.e_shnum];
-    for (int i = 0; i < pheadercount; ++i) {
-        read_program_header_table(fp, &pheaders[i], &header);
-        check_pheader_type(&pheaders[i]);
-
+    if((ret=fstat(elf_descriptor,&st)) < 0){
+        perror("Error in fstat");
     }
-    set_fp_to_section_header_part(fp,&header);
-    printf("ftell postion %ld, section headers located at %ld", ftell(fp),header.e_shoff);
+    file_len = st.st_size;
+    if ((addr = mmap(NULL,file_len,PROT_READ|PROT_WRITE,MAP_SHARED,elf_descriptor,0)) == MAP_FAILED)
+    {
+        perror("Error in mmap");
+        return EXIT_FAILURE;
+    }
+    printf("addr of file is %04x\n",addr);
 
-    for (int i = 0; i < header.e_shnum; ++i) {
-        read_section_header_part(fp,&sheaders[i],&header);
+printf("file is %zu bytes long\n", file_len);
+
+    for (int i = 0; i < file_len; ++i) {
+        printf("%c",addr[i]);
     }
 
 
-fclose(fp);
+read_elf64_header(addr, &header);
+uint16_t pheadercount = header->e_phnum;
+//ElfW(Phdr) pheaders[pheadercount];
+//ElfW(Shdr) sheaders[header->e_shnum];
+printf("\n\n\n----PROGRAM HEADERS----\n\n\n");
+int j = 0;
+for (; j < pheadercount; ++j) {
+    printf("[%d] reading program header type: ",j);
+    //read_program_header_table(elf_descriptor, &pheaders[j], &header);
+    //check_pheader_type(&pheaders[j]);
+}
+//
+//set_fp_to_section_header_part(fp,&header);
+//printf("\n\n\n----SECTIONS----\n\n\n");
+//int strtabcounter = 0;
+//
+//
+//for (int i = 0; i < header.e_shnum; ++i) {
+//    read_section_header_part(fp,&sheaders[i],&header);
+//    printf("[%d] reading section header type: ",i+j);
+//    check_sheader_type(&sheaders[i]);
+//    if (sheaders[i].sh_type == SHT_STRTAB){
+//        strtabcounter++;
+//    }
+//}
+//
+//ElfW(Sym) sym[strtabcounter];
+//for (int i = 0; i < header.e_shnum; ++i) {
+//    if(sheaders[i].sh_type == SHT_STRTAB){
+//        if (get_str_tab(&sheaders[i], &sym[i], fp) == 0){
+//            strtabcounter++;
+//        }
+//    }
+//    }
+printf("\n\n\n----string tabs----\n\n\n");
+free(header);
+munmap(addr,file_len);
+close(elf_descriptor);
 exit(0);
 }

@@ -3,6 +3,8 @@
 
 CMakeFiles/riscvVM.dir/elfhandler.c.o: ../elfhandler.c
 
+CMakeFiles/riscvVM.dir/loader.c.o: ../loader.c
+
 CMakeFiles/riscvVM.dir/main.c.o: ../elfhandler.h
 CMakeFiles/riscvVM.dir/main.c.o: ../main.c
 

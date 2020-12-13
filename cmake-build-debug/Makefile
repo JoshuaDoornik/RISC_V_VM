@@ -170,6 +170,33 @@ elfhandler.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/riscvVM.dir/build.make CMakeFiles/riscvVM.dir/elfhandler.c.s
 .PHONY : elfhandler.c.s
 
+loader.o: loader.c.o
+
+.PHONY : loader.o
+
+# target to build an object file
+loader.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/riscvVM.dir/build.make CMakeFiles/riscvVM.dir/loader.c.o
+.PHONY : loader.c.o
+
+loader.i: loader.c.i
+
+.PHONY : loader.i
+
+# target to preprocess a source file
+loader.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/riscvVM.dir/build.make CMakeFiles/riscvVM.dir/loader.c.i
+.PHONY : loader.c.i
+
+loader.s: loader.c.s
+
+.PHONY : loader.s
+
+# target to generate assembly for a file
+loader.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/riscvVM.dir/build.make CMakeFiles/riscvVM.dir/loader.c.s
+.PHONY : loader.c.s
+
 main.o: main.c.o
 
 .PHONY : main.o
@@ -209,6 +236,9 @@ help:
 	@echo "... elfhandler.o"
 	@echo "... elfhandler.i"
 	@echo "... elfhandler.s"
+	@echo "... loader.o"
+	@echo "... loader.i"
+	@echo "... loader.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

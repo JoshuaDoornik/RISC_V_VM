@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
   "/home/josh/CLionProjects/RISC_V_VM/elfhandler.c" "/home/josh/CLionProjects/RISC_V_VM/cmake-build-debug/CMakeFiles/riscvVM.dir/elfhandler.c.o"
+  "/home/josh/CLionProjects/RISC_V_VM/loader.c" "/home/josh/CLionProjects/RISC_V_VM/cmake-build-debug/CMakeFiles/riscvVM.dir/loader.c.o"
   "/home/josh/CLionProjects/RISC_V_VM/main.c" "/home/josh/CLionProjects/RISC_V_VM/cmake-build-debug/CMakeFiles/riscvVM.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
