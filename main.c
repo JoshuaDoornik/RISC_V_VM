@@ -41,40 +41,35 @@ ElfW(Ehdr)* header;
         perror("Error in mmap");
         return EXIT_FAILURE;
     }
-    printf("addr of file is %04x\n",addr);
+    printf("addr of file is %p\n",addr);
 
-printf("file is %zu bytes long\n", file_len);
-
-    for (int i = 0; i < file_len; ++i) {
-        printf("%c",addr[i]);
-    }
+printf("file is %d bytes long\n", file_len);
 
 
-read_elf64_header(addr, &header);
+read_elf_header(addr, &header);
 uint16_t pheadercount = header->e_phnum;
-//ElfW(Phdr) pheaders[pheadercount];
-//ElfW(Shdr) sheaders[header->e_shnum];
+ElfW(Phdr)* pheaders[pheadercount];
+ElfW(Shdr)* sheaders[header->e_shnum];
 printf("\n\n\n----PROGRAM HEADERS----\n\n\n");
 int j = 0;
 for (; j < pheadercount; ++j) {
     printf("[%d] reading program header type: ",j);
-    //read_program_header_table(elf_descriptor, &pheaders[j], &header);
-    //check_pheader_type(&pheaders[j]);
+    pheaders[j] = (ElfW(Phdr)* ) malloc(sizeof(ElfW(Phdr)));
+    read_program_header_table(addr, &pheaders[j], header->e_phoff + (j * sizeof(ElfW(Phdr))));
+    check_pheader_type(pheaders[j]);
 }
-//
-//set_fp_to_section_header_part(fp,&header);
-//printf("\n\n\n----SECTIONS----\n\n\n");
-//int strtabcounter = 0;
-//
-//
-//for (int i = 0; i < header.e_shnum; ++i) {
-//    read_section_header_part(fp,&sheaders[i],&header);
-//    printf("[%d] reading section header type: ",i+j);
-//    check_sheader_type(&sheaders[i]);
-//    if (sheaders[i].sh_type == SHT_STRTAB){
-//        strtabcounter++;
-//    }
-//}
+printf("\n\n\n----SECTIONS----\n\n\n");
+int strtabcounter = 0;
+
+for (int i = 0; i < header->e_shnum; ++i) {
+    sheaders[i] = (ElfW(Shdr)* ) malloc(header->e_shentsize);
+    read_section_header_part(addr,&sheaders[i], header->e_shoff + (header->e_shentsize * i),header);
+    printf("[%d] reading section header type: ",i+j);
+    check_sheader_type(sheaders[i]);
+    if (sheaders[i]->sh_type == SHT_STRTAB){
+        strtabcounter++;
+    }
+}
 //
 //ElfW(Sym) sym[strtabcounter];
 //for (int i = 0; i < header.e_shnum; ++i) {
@@ -85,7 +80,15 @@ for (; j < pheadercount; ++j) {
 //    }
 //    }
 printf("\n\n\n----string tabs----\n\n\n");
+
+for (int i = 0; i < header->e_shnum; ++i) {
+free(sheaders[i]);
+}
 free(header);
+for (int i = 0; i <pheadercount; ++i) {
+        free(pheaders[i]);
+}
+
 munmap(addr,file_len);
 close(elf_descriptor);
 exit(0);

@@ -45,25 +45,16 @@ bool elf_check_file(ElfW(Ehdr)  *hdr) {
 }
 
 ///Reads the header from the elf. Assumes file pointer in correct position
-int read_elf64_header(char* elf, ElfW(Ehdr)** header) {
+int read_elf_header(char* elf, ElfW(Ehdr)** header) {
     *header = memcpy( *header, elf, 0x40);
     if (elf_check_file(*header)){
         return 0;
     }else{
         return 1;
     }
-    }
-///Reads a single program header from raw elf file. If the file pointer is in the wrong position -1 is returned.
-int read_elf32_header(FILE *file, Elf32_Ehdr *header){
-    fread(header, 0x34, 1, file);
-    // check so its really an elf file
-    if (memcmp(header->e_ident, ELFMAG, SELFMAG) == 0) {
-        return 0;
-    }
-    else{
-        return -1;
-    }
+
 }
+
 ///checks wether the pointer is at the start of the program headers or past it
 int check_fp_program_header_position(FILE *fp, ElfW(Ehdr) *ehdr){
     long int pos = ftell(fp);
@@ -76,9 +67,8 @@ void set_fp_program_header_position(FILE *fp, ElfW(Ehdr) *ehdr){
 }
 
 ///Reads a single program header from raw elf file. Assumes the file pointer is in the correct position.
-int read_program_header_table(char *elf, ElfW(Phdr) *program_header, ElfW(Ehdr) *ehdr) {
-    program_header = (ElfW(Phdr) *) &elf + ehdr->e_phoff;
-
+int read_program_header_table(char *elf, ElfW(Phdr) **program_header, unsigned long offset) {
+    *program_header = memcpy( *program_header, elf + offset, sizeof(ElfW(Phdr)));
     return 0;
 }
 
@@ -225,7 +215,6 @@ void set_fp_to_section_header_part(FILE *fp, ElfW(Ehdr) *ehdr) {
     }
 }
 
-void read_section_header_part(FILE *fp, ElfW(Shdr) *shdr, ElfW(Ehdr) *ehdr){
-
-    fread(shdr,1,ehdr->e_shentsize,fp);
+void read_section_header_part(char* elf, ElfW(Shdr) **shdr, unsigned long offset, ElfW(Ehdr) *ehdr){
+    *shdr = memcpy( *shdr, elf + offset, ehdr->e_shentsize);
 }

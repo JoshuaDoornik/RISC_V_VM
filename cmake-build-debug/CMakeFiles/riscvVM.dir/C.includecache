@@ -6,21 +6,37 @@
 
 #IncludeRegexTransform: 
 
-/home/josh/CLionProjects/RISC_V_VM/elfhandler.c
+/home/josh/CLionProjects/RISC_V_VM/elfhandler.h
 elf.h
--
-link.h
 -
 bits/types/FILE.h
 -
+
+/home/josh/CLionProjects/RISC_V_VM/main.c
 stdio.h
+-
+stdlib.h
+-
+zconf.h
 -
 string.h
 -
-malloc.h
+sys/mman.h
 -
-unistd.h
+stdio.h
 -
-stdbool.h
+stdlib.h
+-
+link.h
+-
+elfhandler.h
+/home/josh/CLionProjects/RISC_V_VM/elfhandler.h
+inttypes.h
+-
+sys/stat.h
+-
+fcntl.h
+-
+bits/fcntl-linux.h
 -
 
