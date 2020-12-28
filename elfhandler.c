@@ -41,12 +41,15 @@ bool elf_check_file(ElfW(Ehdr)  *hdr) {
         ERROR( "ELF Header EI_MAG3 incorrect.\n");
         return false;
     }
+    if(hdr->e_machine != EM_RISCV){
+        ERROR("this vm only supports RISCV elfs \n");
+    }
     return true;
 }
 
 ///Reads the header from the elf. Assumes file pointer in correct position
 int read_elf_header(char* elf, ElfW(Ehdr)** header) {
-    *header = memcpy( *header, elf, 0x40);
+    *header = memcpy( *header, elf, sizeof(ElfW(Ehdr)));
     if (elf_check_file(*header)){
         return 0;
     }else{
@@ -55,21 +58,21 @@ int read_elf_header(char* elf, ElfW(Ehdr)** header) {
 
 }
 
-///checks wether the pointer is at the start of the program headers or past it
-int check_fp_program_header_position(FILE *fp, ElfW(Ehdr) *ehdr){
-    long int pos = ftell(fp);
-    int endOfPhdrPos = ehdr->e_phentsize * ehdr->e_phnum;
-    return (pos >= ehdr->e_phoff && pos <= endOfPhdrPos);
-}
-
-void set_fp_program_header_position(FILE *fp, ElfW(Ehdr) *ehdr){
-    fseek(fp,ehdr->e_phoff,0l);
-}
-
 ///Reads a single program header from raw elf file. Assumes the file pointer is in the correct position.
 int read_program_header_table(char *elf, ElfW(Phdr) **program_header, unsigned long offset) {
     *program_header = memcpy( *program_header, elf + offset, sizeof(ElfW(Phdr)));
     return 0;
+}
+
+
+int setup_string_table(char *elf, int shstrndx, int e_shentsize){
+    if(shstrndx == SHN_UNDEF){
+        return -1;
+    }
+    ElfW(Shdr) *stringtab;
+    stringtab =  memcpy( stringtab, elf + shstrndx, e_shentsize);
+
+    printf(stringtab);
 }
 
 ///Prints the program header type in plain text. Useful for debugging if you don't feel like decoding hex numbers again.
@@ -111,6 +114,12 @@ void check_pheader_type(ElfW(Phdr) *phdr) {
             break;
         case PT_HIPROC:
             printf("PT_HIPROC\n");
+            break;
+        case PT_GNU_EH_FRAME:
+            printf("PT_GNU_EH_FRAME\n");
+            break;
+        case PT_GNU_RELRO:
+            printf("PT_GNU_RELRO\n");
             break;
         case PT_GNU_STACK:
             printf("PT_GNU_STACK\n");
@@ -174,6 +183,21 @@ void check_sheader_type(ElfW(Shdr) *shdr) {
         case SHT_PREINIT_ARRAY:
             printf("SHT_PREINIT_ARRAY\n");
             break;
+        case SHT_GNU_HASH:
+            printf("GNU_HASH\n");
+            break;
+        case SHT_GNU_versym:
+            printf("GNU_VERSIM\n");
+            break;
+        case SHT_GNU_verneed:
+            printf("GNU_VERNEED\n");
+            break;
+        case SHT_INIT_ARRAY:
+            printf("SHT_INIT_ARRAY\n");
+            break;
+        case SHT_FINI_ARRAY:
+            printf("SHT_FINI_ARRAY\n");
+            break;
         default:
             printf("NON STANDARD TYPE. PROBABLY GNU RELATED.\n");
     }
@@ -181,19 +205,11 @@ void check_sheader_type(ElfW(Shdr) *shdr) {
 
 ///Takes a SHT_STRTAB header, empty pointer and a file pointer.
 ///get this data and load it into the correct datastructures to ensure the VM correctly performs the executable.
-int get_str_tab(ElfW(Shdr) *shdr, ElfW(Sym)* data, FILE* fp){
-    //data = malloc(shdr->sh_size);
-    int org_position = ftell(fp);
-    fseek(fp,shdr->sh_offset,SEEK_SET);
-    printf("position is %ld should be %lu \n",ftell(fp),shdr->sh_offset);
-    char* tempdata [shdr->sh_size];
-    fread(tempdata,1,shdr->sh_size,fp);
-    data = (ElfW(Sym)*)  tempdata;
-    //return the pointer to its original position.
-    fseek(fp,org_position,SEEK_SET);
+int get_str_tab(ElfW(Sym) **data, char* elf,unsigned long offset, unsigned long size){
+    printf("searching at offset:%lu for %lu bytes\n",offset,size);
+    for (int i = 0; i < size; ++i) {
+        printf("%c",elf[offset+i]);
 
-    if(data == NULL){
-        return -1;
     }
     printf("\n");
     return 0;
