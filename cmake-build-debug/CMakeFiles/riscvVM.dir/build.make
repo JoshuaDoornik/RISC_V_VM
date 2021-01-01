@@ -103,31 +103,31 @@ CMakeFiles/riscvVM.dir/elfhandler.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/riscvVM.dir/elfhandler.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/josh/CLionProjects/RISC_V_VM/elfhandler.c -o CMakeFiles/riscvVM.dir/elfhandler.c.s
 
-CMakeFiles/riscvVM.dir/loader.c.o: CMakeFiles/riscvVM.dir/flags.make
-CMakeFiles/riscvVM.dir/loader.c.o: ../loader.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/josh/CLionProjects/RISC_V_VM/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/riscvVM.dir/loader.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/riscvVM.dir/loader.c.o   -c /home/josh/CLionProjects/RISC_V_VM/loader.c
+CMakeFiles/riscvVM.dir/virtualmachine.c.o: CMakeFiles/riscvVM.dir/flags.make
+CMakeFiles/riscvVM.dir/virtualmachine.c.o: ../virtualmachine.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/josh/CLionProjects/RISC_V_VM/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/riscvVM.dir/virtualmachine.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/riscvVM.dir/virtualmachine.c.o   -c /home/josh/CLionProjects/RISC_V_VM/virtualmachine.c
 
-CMakeFiles/riscvVM.dir/loader.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/riscvVM.dir/loader.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/josh/CLionProjects/RISC_V_VM/loader.c > CMakeFiles/riscvVM.dir/loader.c.i
+CMakeFiles/riscvVM.dir/virtualmachine.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/riscvVM.dir/virtualmachine.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/josh/CLionProjects/RISC_V_VM/virtualmachine.c > CMakeFiles/riscvVM.dir/virtualmachine.c.i
 
-CMakeFiles/riscvVM.dir/loader.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/riscvVM.dir/loader.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/josh/CLionProjects/RISC_V_VM/loader.c -o CMakeFiles/riscvVM.dir/loader.c.s
+CMakeFiles/riscvVM.dir/virtualmachine.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/riscvVM.dir/virtualmachine.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/josh/CLionProjects/RISC_V_VM/virtualmachine.c -o CMakeFiles/riscvVM.dir/virtualmachine.c.s
 
 # Object files for target riscvVM
 riscvVM_OBJECTS = \
 "CMakeFiles/riscvVM.dir/main.c.o" \
 "CMakeFiles/riscvVM.dir/elfhandler.c.o" \
-"CMakeFiles/riscvVM.dir/loader.c.o"
+"CMakeFiles/riscvVM.dir/virtualmachine.c.o"
 
 # External object files for target riscvVM
 riscvVM_EXTERNAL_OBJECTS =
 
 riscvVM: CMakeFiles/riscvVM.dir/main.c.o
 riscvVM: CMakeFiles/riscvVM.dir/elfhandler.c.o
-riscvVM: CMakeFiles/riscvVM.dir/loader.c.o
+riscvVM: CMakeFiles/riscvVM.dir/virtualmachine.c.o
 riscvVM: CMakeFiles/riscvVM.dir/build.make
 riscvVM: CMakeFiles/riscvVM.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/josh/CLionProjects/RISC_V_VM/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable riscvVM"

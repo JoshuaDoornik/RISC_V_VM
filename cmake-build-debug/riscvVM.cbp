@@ -82,13 +82,13 @@
 		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/elfhandler.h">
 			<Option target="riscvVM"/>
 		</Unit>
-		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/loader.c">
-			<Option target="riscvVM"/>
-		</Unit>
-		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/loader.h">
-			<Option target="riscvVM"/>
-		</Unit>
 		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/main.c">
+			<Option target="riscvVM"/>
+		</Unit>
+		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/virtualmachine.c">
+			<Option target="riscvVM"/>
+		</Unit>
+		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/virtualmachine.h">
 			<Option target="riscvVM"/>
 		</Unit>
 		<Unit filename="/home/josh/CLionProjects/RISC_V_VM/CMakeLists.txt">

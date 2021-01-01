@@ -20,5 +20,6 @@ void set_fp_program_header_position(FILE *fp, ElfW(Ehdr) *ehdr);
 void set_fp_to_section_header_part(FILE *fp, ElfW(Ehdr) *ehdr);
 void read_section_header_part(char* elf, ElfW(Shdr) **shdr, unsigned long offset, ElfW(Ehdr) *ehdr);
 void check_sheader_type(ElfW(Shdr) *shdr);
-int get_str_tab(ElfW(Sym) **data, char* elf,unsigned long offset, unsigned long size);
+int get_str_tab(ElfW(Shdr) *stringHeader, char* elf,char *strTab);
 int setup_string_table(char *elf, int shstrndx, int e_shentsize);
+void print_array_part(char* arr, int offset, int length);

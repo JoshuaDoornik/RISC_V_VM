@@ -27,18 +27,12 @@ int debugbuffer(FILE *fp,size_t sz){
 int openELF(char* filename, char** addr, int* file_len,int* elf_descriptor){
     int ret;
     struct stat st;
-    char buffer[10];
 
     int fd = open(filename, O_RDWR | O_CREAT, FILEMODE);
     if (fd == 0){
         printf("couldn't open file. \n");
         return errno;
     }
-    read(fd,buffer,10);
-    for (int i = 0; i < 10; ++i) {
-        printf("%c",buffer[i]);
-    }
-    printf("\n");
     if((ret=fstat(fd,&st)) < 0){
         perror("Error in fstat");
         return ret;
@@ -58,14 +52,12 @@ int openELF(char* filename, char** addr, int* file_len,int* elf_descriptor){
 int main(int argc, char **argv) {
 
     int elf_descriptor,file_len;
-    char *addr;
-    char *filename;
+    char *addr,*filename,*strab;
     if( argc < 2){
-        filename = "/home/josh/CLionProjects/RISC_V_VM/riscvprogram";
+        filename = "/home/josh/riscHello";
     }else{
         filename = argv[1];
     }
-
     if (openELF(filename, &addr,&file_len,&elf_descriptor) != 0){
         exit(1);
     }
@@ -74,12 +66,10 @@ int main(int argc, char **argv) {
     //open the elf file and print some info about it
     header = (ElfW(Ehdr)*) malloc(sizeof(ElfW(Ehdr)));
 
-
-    char** symbolTable;
     //setup the string table
 
     read_elf_header(addr, &header);
-    setup_string_table(addr, header->e_shstrndx,header->e_shentsize);
+    setup_string_table(addr,header->e_shstrndx,header->e_shentsize);
 
     uint16_t pheadercount = header->e_phnum;
     ElfW(Phdr)* pheaders[pheadercount];
@@ -92,41 +82,32 @@ int main(int argc, char **argv) {
         check_pheader_type(pheaders[j]);
     }
     printf("\n\n\n----SECTIONS----\n\n\n");
-    int strtabcounter = 0;
 
     for (int i = 0; i < header->e_shnum; ++i) {
         sheaders[i] = (ElfW(Shdr)* ) malloc(header->e_shentsize);
         read_section_header_part(addr,&sheaders[i], header->e_shoff + (header->e_shentsize * i),header);
         printf("[%d] reading section header type: ",i);
         check_sheader_type(sheaders[i]);
-        if (sheaders[i]->sh_type == SHT_STRTAB){
-            strtabcounter++;
-        }
     }
 
-    ElfW(Sym) sym[strtabcounter];
-    strtabcounter = 0;
-    for (int i = 0; i < header->e_shnum; ++i) {
-        if (sheaders[i]->sh_type == SHT_STRTAB) {
-            if (get_str_tab(&sym[strtabcounter], addr,sheaders[i]->sh_offset,sheaders[i]->sh_size) == 0) {
+    get_str_tab(sheaders[header->e_shstrndx],addr,&strab);
+    print_array_part(strab,0,sheaders[header->e_shstrndx]->sh_size);
 
-            }
-            strtabcounter++;
-        }
-        if(sheaders[i]->sh_type == SHT_PROGBITS){
-            printf("h\n");
-        }
-    }
-    printf("\n\n\n----string tabs----\n\n\n");
 
     for (int i = 0; i < header->e_shnum; ++i) {
+        int name_off = sheaders[i]->sh_name;
+        printf("%s\n",strab+name_off);
+        if(memcmp(strab+name_off,".text",5) ==0){
+            char* textdata = addr+ sheaders[i]->sh_offset;
+            print_array_part(textdata,0,sheaders[i]->sh_size);
+        }
         free(sheaders[i]);
     }
     free(header);
     for (int i = 0; i <pheadercount; ++i) {
         free(pheaders[i]);
     }
-
+    free(strab);
     munmap(addr,file_len);
     close(elf_descriptor);
     exit(0);

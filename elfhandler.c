@@ -67,12 +67,10 @@ int read_program_header_table(char *elf, ElfW(Phdr) **program_header, unsigned l
 
 int setup_string_table(char *elf, int shstrndx, int e_shentsize){
     if(shstrndx == SHN_UNDEF){
+        printf("shstrndx not set\n");
         return -1;
     }
-    ElfW(Shdr) *stringtab;
-    stringtab =  memcpy( stringtab, elf + shstrndx, e_shentsize);
-
-    printf(stringtab);
+    return 0;
 }
 
 ///Prints the program header type in plain text. Useful for debugging if you don't feel like decoding hex numbers again.
@@ -203,22 +201,29 @@ void check_sheader_type(ElfW(Shdr) *shdr) {
     }
 }
 
-///Takes a SHT_STRTAB header, empty pointer and a file pointer.
-///get this data and load it into the correct datastructures to ensure the VM correctly performs the executable.
-int get_str_tab(ElfW(Sym) **data, char* elf,unsigned long offset, unsigned long size){
-    printf("searching at offset:%lu for %lu bytes\n",offset,size);
-    for (int i = 0; i < size; ++i) {
-        printf("%c",elf[offset+i]);
-
+void print_array_part(char* arr, int offset, int length){
+    int count = 0;
+    for (int i = 0; i < length; ++i) {
+        if (arr[offset+i] == '\0'){
+            printf("\\0");
+            count++;
+        }else{
+        printf("%c",arr[offset+i]);
+        }
     }
     printf("\n");
+    printf("%d nullbytes found\n",count);
+}
+
+///Takes a SHT_STRTAB header, empty pointer and a file pointer.
+///get this data and load it into the correct datastructures to ensure the VM correctly performs the executable.
+int get_str_tab(ElfW(Shdr) *stringHeader, char* elf,char **strTab){
+    *strTab = malloc(stringHeader->sh_size);
+    memcpy(*strTab,elf + stringHeader->sh_offset, stringHeader->sh_size);
     return 0;
 }
 
-///TODO segments contain useful data for the VM to start the executable.
-///get this data and load it into the correct datastructures to ensure the VM correctly performs the executable.
-void get_segment(ElfW(Phdr) *phdr,ElfW(Shdr) *shdr, FILE *fp){
-}
+
 
 ///sets file pointer to the section header table start
 void set_fp_to_section_header_part(FILE *fp, ElfW(Ehdr) *ehdr) {

@@ -3,8 +3,9 @@
 
 CMakeFiles/riscvVM.dir/elfhandler.c.o
  /home/josh/CLionProjects/RISC_V_VM/elfhandler.c
-CMakeFiles/riscvVM.dir/loader.c.o
- /home/josh/CLionProjects/RISC_V_VM/loader.c
 CMakeFiles/riscvVM.dir/main.c.o
  /home/josh/CLionProjects/RISC_V_VM/elfhandler.h
  /home/josh/CLionProjects/RISC_V_VM/main.c
+CMakeFiles/riscvVM.dir/virtualmachine.c.o
+ /home/josh/CLionProjects/RISC_V_VM/virtualmachine.c
+ /home/josh/CLionProjects/RISC_V_VM/virtualmachine.h
